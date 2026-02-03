@@ -1,0 +1,46 @@
+class Solution {
+    public int candy(int[] ratings) {
+        if (ratings.length == 0) return 0;
+        
+        int n = ratings.length;
+        int sum = 1;      // Give 1 candy to the first child
+        int up = 0;       // Length of the current rising slope
+        int down = 0;     // Length of the current falling slope
+        int peak = 0;     // Height of the last peak
+        
+        for (int i = 1; i < n; i++) {
+            // Case 1: Rising Slope (Current > Previous)
+            if (ratings[i] > ratings[i - 1]) {
+                up++;
+                peak = up;     // The peak height matches the 'up' run
+                down = 0;      // Reset down counter
+                sum += (1 + up); // Add base 1 + height
+            } 
+            // Case 2: Flat Surface (Current == Previous)
+            else if (ratings[i] == ratings[i - 1]) {
+                up = 0;
+                down = 0;
+                peak = 0;
+                sum += 1; // Reset to 1 candy
+            } 
+            // Case 3: Falling Slope (Current < Previous)
+            else {
+                up = 0;
+                down++;
+                // When going down, we add 'down' candies.
+                // e.g., if down is 1, we add 1 (for the current child).
+                // if down is 2, we add 2 (current gets 1, previous gets boosted to 2, etc.)
+                sum += down;
+                
+                // CORRECTION:
+                // If the valley goes deeper than the peak was high, 
+                // we must effectively increase the peak's height.
+                if (down > peak) {
+                    sum += 1;
+                }
+            }
+        }
+        
+        return sum;
+    }
+}
